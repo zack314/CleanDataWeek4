@@ -1,0 +1,32 @@
+# README for run_analysis.R
+
+This document describes the structure of the R file `run_analysis.R`.
+
+When executed, `run_analysis.R` prepares the file `means.txt` (see `CodeBook.Rmd` for a full description of the content of that file)
+
+## Launching
+
+To launch the script, navigate to directory containing `run_analysis.R` and enter
+```
+RScript run_analysis.R
+```
+
+*Note*: Needs the library `dplyr`. If missing, type `install.packages("dplyr")` in a `R` prompt.
+
+## Structure of the code
+
+1. Create a new directory `RunAnalysis` and move there
+2. Download the data as a `.zip` and extract it
+3. Read `features.txt` 
+      + Select all the features matching `std()` or `mean()`, save them in `featuresIndex`. (We do not match with `Mean`, as these features do not correspond to a standard deviation in the measurements)
+      + Tidy up the features names
+4. Read `activity_labels.txt`
+5. Define the function `renameActivity` that replaces activity numbers by their names
+6. Define the function `readDataFolder` that asks for a `folder` argument and looks in the directory `folder` for the files
+      + `subject_folder.txt` for the `subject` dataframe,
+      + `X_folder.txt` for the `measurement` dataframe (we only keep the columns matching with `featuresIndex` and we rename its columns accordingly),
+      + `y_folder.txt` for the `activity` dataframe (we apply `renameActivity` to it).
+7. We run `readDataFolder` on both folders `test` and `train`, and we `rbind` the result into a big `Data` dataframe. We also reorder `Data` by `Subject` (numerical) and `Activity` (character).
+8. We `split` the `Data` by the vector `Data$Subject` and `Data$Activity`.
+9. For each subset `Data->Subject->Activity`, we compute the mean over each columns of features, and store it into a new dataframe `means`. Hence `means` has the structure `means->Subject->Activity->Feature->value`.
+10. We tidy up the work space and store `means` into `means.txt`.
